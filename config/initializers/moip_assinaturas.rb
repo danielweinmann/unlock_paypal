@@ -1,3 +1,5 @@
+require "moip-assinaturas"
+
 # Configuring Moip
 Moip::Assinaturas.config do |config|
   config.sandbox = true

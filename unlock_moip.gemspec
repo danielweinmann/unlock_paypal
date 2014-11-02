@@ -7,17 +7,19 @@ require "unlock_moip/version"
 Gem::Specification.new do |s|
   s.name        = "unlock_moip"
   s.version     = UnlockMoip::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of UnlockMoip."
-  s.description = "TODO: Description of UnlockMoip."
+  s.authors     = ["Daniel Weinmann"]
+  s.email       = ["danielweinmann@gmail.com"]
+  s.homepage    = "https://github.com/danielweinmann/unlock_moip"
+  s.summary     = "Moip Assinaturas integration for Unlock"
+  s.description = "Moip Assinaturas integration for Unlock"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
   s.add_dependency "rails", "~> 4.1.6"
-  s.add_dependency "moip_assinaturas", "0.4.2"
+  s.add_dependency "moip-assinaturas", "0.4.2"
+  s.add_dependency "slim"
+  s.add_dependency "slim-rails"
 
   s.add_development_dependency "sqlite3"
 end
