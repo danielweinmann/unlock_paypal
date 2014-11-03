@@ -1,4 +1,4 @@
-= form_for [@initiative, @contribution], url: initiative_contributions_path(@initiative.id), method: :post do |form|
+= form_for @contribution, url: moip_contributions_path, method: :post do |form|
   - if @contribution.gateway.sandbox?
     .warning
       h3 Atenção! Este unlock encontra-se em modo de testes (Sandbox) no Moip.
@@ -12,6 +12,8 @@
         - @contribution.errors.full_messages.each do |msg|
           li= msg
   = form.hidden_field :user_id
+  = form.hidden_field :initiative_id
+  = form.hidden_field :gateway_id
   h3 Com quanto você quer apoiar por mês?
   = form.label :value
   = form.text_field :value, class: "has_em"

@@ -18,8 +18,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 4.1.6"
   s.add_dependency "moip-assinaturas", "0.4.2"
-  s.add_dependency "slim"
-  s.add_dependency "slim-rails"
 
   s.add_development_dependency "sqlite3"
 end
