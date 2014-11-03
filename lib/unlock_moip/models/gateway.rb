@@ -6,6 +6,10 @@ module UnlockMoip
         "Moip Assinaturas"
       end
 
+      def image
+        "unlock_moip/logo.png"
+      end
+
     end
   end
 end
