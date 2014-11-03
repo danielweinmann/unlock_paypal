@@ -1,6 +1,6 @@
 require "unlock_moip/engine"
-require "unlock_moip/active_record/gateway"
-require "unlock_moip/active_record/contribution"
+require "unlock_moip/models/gateway"
+require "unlock_moip/models/contribution"
 
 module UnlockMoip
 end

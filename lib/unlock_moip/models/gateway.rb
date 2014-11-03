@@ -1,5 +1,5 @@
 module UnlockMoip
-  module ActiveRecord
+  module Models
     module Gateway
 
       def name

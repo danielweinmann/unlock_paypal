@@ -1,5 +1,5 @@
 module UnlockMoip
-  module ActiveRecord
+  module Models
     module Contribution
 
       def moip_auth
