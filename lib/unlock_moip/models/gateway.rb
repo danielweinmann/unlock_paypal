@@ -10,6 +10,10 @@ module UnlockMoip
         "unlock_moip/logo.png"
       end
 
+      def has_sandbox?
+        true
+      end
+
     end
   end
 end
