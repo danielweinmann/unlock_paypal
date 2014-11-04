@@ -19,6 +19,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
     
     # Creating the contribution
     @initiative = Initiative.find(contribution_params[:initiative_id])
+    @gateways = @initiative.gateways.without_state(:draft).order(:ordering)
     @contribution = @initiative.contributions.new(contribution_params)
     @contribution.gateway_state = @contribution.gateway.state
     authorize @contribution
@@ -42,11 +43,11 @@ class UnlockMoip::ContributionsController < ::ApplicationController
       unless response[:success]
         plan = {
           code: @contribution.plan_code,
-          name: "#{@initiative.name[0..29]} #{@contribution.value.to_i}#{' (Sandbox)' if @initiative.sandbox?}",
+          name: @contribution.plan_name,
           amount: (@contribution.value * 100).to_i
         }
         begin
-          response = Moip::Assinaturas::Plan.create(plan, moip_auth: @contribution.moip_auth)
+          response = Moip::Assinaturas::Plan.create(plan, @contribution.moip_auth)
         rescue
           @contribution.errors.add(:base, "Ocorreu um erro de conexão ao criar o plano de assinaturas no Moip. Por favor, tente novamente.")
           return render '/initiatives/contributions/new'
@@ -86,14 +87,14 @@ class UnlockMoip::ContributionsController < ::ApplicationController
         }
       }
       begin
-        response = Moip::Assinaturas::Customer.details(@contribution.customer_code, moip_auth: @contribution.moip_auth)
+        response = Moip::Assinaturas::Customer.details(@contribution.customer_code, @contribution.moip_auth)
       rescue
         @contribution.errors.add(:base, "Ocorreu um erro de conexão ao verificar o cadastro de cliente no Moip. Por favor, tente novamente.")
         return render '/initiatives/contributions/new'
       end
       if response[:success]
         begin
-          response = Moip::Assinaturas::Customer.update(@contribution.customer_code, customer, moip_auth: @contribution.moip_auth)
+          response = Moip::Assinaturas::Customer.update(@contribution.customer_code, customer, @contribution.moip_auth)
           unless response[:success]
             if response[:errors] && response[:errors].kind_of?(Array)
               response[:errors].each do |error|
@@ -110,7 +111,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
         end
       else
         begin
-          response = Moip::Assinaturas::Customer.create(customer, new_vault = false, moip_auth: @contribution.moip_auth)
+          response = Moip::Assinaturas::Customer.create(customer, new_vault = false, @contribution.moip_auth)
         rescue
           @contribution.errors.add(:base, "Ocorreu um erro de conexão ao realizar o cadastro de cliente no Moip. Por favor, tente novamente.")
           return render '/initiatives/contributions/new'
@@ -128,7 +129,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
       end
 
       flash[:success] = "Apoio iniciado com sucesso! Agora é só realizar o pagamento :D"
-      return redirect_to unlock_moip.edit_contribution_path(@contribution)
+      return redirect_to edit_moip_contribution_path(@contribution)
 
     else
       return render '/initiatives/contributions/new'
@@ -137,6 +138,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
   end
 
   def edit
+    edit! { authorize resource }
   end
 
   def activate
@@ -145,7 +147,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
     if @contribution.can_activate?
       begin
         if @contribution.moip_state_name != :active
-          response = Moip::Assinaturas::Subscription.activate(@contribution.subscription_code, moip_auth: @contribution.moip_auth)
+          response = Moip::Assinaturas::Subscription.activate(@contribution.subscription_code, @contribution.moip_auth)
           @contribution.activate! if response[:success]
         else
           @contribution.activate!
@@ -165,7 +167,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
     if @contribution.can_suspend?
       begin
         if @contribution.moip_state_name != :suspended
-          response = Moip::Assinaturas::Subscription.suspend(@contribution.subscription_code, moip_auth: @contribution.moip_auth)
+          response = Moip::Assinaturas::Subscription.suspend(@contribution.subscription_code, @contribution.moip_auth)
           @contribution.suspend! if response[:success]
         else
           @contribution.suspend!

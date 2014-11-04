@@ -1,5 +1,5 @@
 = form_for @contribution, url: moip_contributions_path, method: :post do |form|
-  - if @contribution.gateway.sandbox?
+  - if gateway.sandbox?
     .warning
       h3 Atenção! Este unlock encontra-se em modo de testes (Sandbox) no Moip.
       ul
@@ -13,7 +13,7 @@
           li= msg
   = form.hidden_field :user_id
   = form.hidden_field :initiative_id
-  = form.hidden_field :gateway_id
+  = form.hidden_field :gateway_id, value: gateway.id
   h3 Com quanto você quer apoiar por mês?
   = form.label :value
   = form.text_field :value, class: "has_em"

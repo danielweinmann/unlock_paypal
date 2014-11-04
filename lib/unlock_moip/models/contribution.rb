@@ -10,6 +10,10 @@ module UnlockMoip
       def plan_code
         "#{self.initiative.permalink[0..29]}#{self.value.to_i}#{'sandbox' if self.gateway.sandbox?}"
       end
+
+      def plan_name
+        "#{self.initiative.name[0..29]} #{self.value.to_i}#{' (Sandbox)' if self.gateway.sandbox?}"
+      end
     
       # TODO make this a hash
       def customer_code
