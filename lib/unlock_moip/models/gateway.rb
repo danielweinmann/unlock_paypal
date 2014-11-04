@@ -6,6 +6,10 @@ module UnlockMoip
         "Moip Assinaturas"
       end
 
+      def headline
+        "Gerencie mensalidades, assinaturas e cobranças recorrentes com o Moip"
+      end
+
       def image
         "unlock_moip/logo.png"
       end
