@@ -25,6 +25,7 @@ module UnlockMoip
         "#{self.initiative.permalink[0..29]}#{self.id}#{'sandbox' if self.gateway.sandbox?}"
       end
       
+      # TODO these numbers are not used anymore. Use string and/or symbol
       def moip_state
         begin
           response = Moip::Assinaturas::Subscription.details(self.subscription_code, moip_auth: self.moip_auth)
