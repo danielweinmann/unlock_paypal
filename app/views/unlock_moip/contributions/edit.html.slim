@@ -30,6 +30,7 @@ form#pay_form autocomplete="off" data-token=@contribution.gateway.settings["toke
     = "/mês"
   .status
   .submit= submit_tag "Confirmar pagamento"
+/ TODO move this to Initatives::ContributionsController#show and make UnlockMoip redirect to it after completing transaction
 .options id=dom_id(@contribution) data-url=initiative_contribution_path(@contribution.initiative.id, @contribution.id)
   .field
     = check_box_tag :"hide_name_#{@contribution.id}", "1", @contribution.hide_name, :class => "editable", :"data-attribute" => "hide_name", :"data-formtype" => "checkbox"
