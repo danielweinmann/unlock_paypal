@@ -43,6 +43,7 @@ module UnlockMoip
         end
       end
 
+      # TODO these numbers are not used anymore. Use string and/or symbol
       def moip_state_name
         case self.moip_state
           when 1
