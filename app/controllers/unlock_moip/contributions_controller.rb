@@ -22,6 +22,9 @@ class UnlockMoip::ContributionsController < ::ApplicationController
     @gateways = @initiative.gateways.without_state(:draft).order(:ordering)
     @contribution = @initiative.contributions.new(contribution_params)
     @contribution.gateway_state = @contribution.gateway.state
+    @contribution.gateway_data = {}
+    @contribution.gateway_data["customer_code"] = @contribution.customer_code
+    @contribution.gateway_data["subscription_code"] = @contribution.subscription_code
     authorize @contribution
 
     if @contribution.save

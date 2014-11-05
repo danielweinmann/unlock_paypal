@@ -15,16 +15,22 @@ module UnlockMoip
         "#{self.initiative.name[0..29]} #{self.value.to_i}#{' (Sandbox)' if self.gateway.sandbox?}"
       end
     
-      # TODO make this a hash
       def customer_code
-        "#{self.initiative.permalink[0..29]}#{self.user.id}#{'sandbox' if self.gateway.sandbox?}"
+        if self.gateway_data && self.gateway_data["customer_code"]
+          self.gateway_data["customer_code"]
+        else
+          Digest::MD5.new.update("#{self.initiative.permalink[0..29]}#{self.user.id}#{'sandbox' if self.gateway.sandbox?}").to_s
+        end
       end
       
-      # TODO make this a hash
       def subscription_code
-        "#{self.initiative.permalink[0..29]}#{self.id}#{'sandbox' if self.gateway.sandbox?}"
+        if self.gateway_data && self.gateway_data["subscription_code"]
+          self.gateway_data["subscription_code"]
+        else
+          Digest::MD5.new.update("#{self.initiative.permalink[0..29]}#{self.id}#{'sandbox' if self.gateway.sandbox?}").to_s
+        end
       end
-      
+
       def moip_state_name
         begin
           response = Moip::Assinaturas::Subscription.details(self.subscription_code, self.moip_auth)
@@ -42,7 +48,7 @@ module UnlockMoip
         end
       end
 
-      def update_state_from_moip!
+      def update_state_from_gateway!
         if self.state_name != self.moip_state_name
           case self.moip_state_name
             when :active
