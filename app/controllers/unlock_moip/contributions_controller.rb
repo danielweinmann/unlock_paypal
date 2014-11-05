@@ -142,46 +142,34 @@ class UnlockMoip::ContributionsController < ::ApplicationController
   end
 
   def activate
-    authorize resource
-    errors = []
-    if @contribution.can_activate?
-      begin
-        if @contribution.moip_state_name != :active
-          response = Moip::Assinaturas::Subscription.activate(@contribution.subscription_code, @contribution.moip_auth)
-          @contribution.activate! if response[:success]
-        else
-          @contribution.activate!
-        end
-      rescue
-        errors << "Não foi possível ativar sua assinatura no Moip Assinaturas"
-      end
-    else
-      errors << "Não é permitido ativar este apoio."
-    end
-    render(json: {success: (errors.size == 0), errors: errors}, status: ((errors.size == 0) ? 200 : 422))
+    transition_state("activate", :active)
   end
   
   def suspend
-    authorize resource
-    errors = []
-    if @contribution.can_suspend?
-      begin
-        if @contribution.moip_state_name != :suspended
-          response = Moip::Assinaturas::Subscription.suspend(@contribution.subscription_code, @contribution.moip_auth)
-          @contribution.suspend! if response[:success]
-        else
-          @contribution.suspend!
-        end
-      rescue
-        errors << "Não foi possível suspender sua assinatura no Moip Assinaturas"
-      end
-    else
-      errors << "Não é permitido suspender este apoio."
-    end
-    render(json: {success: (errors.size == 0), errors: errors}, status: ((errors.size == 0) ? 200 : 422))
+    transition_state("suspend", :suspended)
   end
 
   private
+
+  def transition_state(transition, state)
+    authorize resource
+    errors = []
+    if resource.send("can_#{transition}?")
+      begin
+        if resource.moip_state_name != state
+          response = Moip::Assinaturas::Subscription.send(transition.to_sym, resource.subscription_code, resource.moip_auth)
+          resource.send("#{transition}!") if response[:success]
+        else
+          resource.send("#{transition}!")
+        end
+      rescue
+        errors << "Não foi possível alterar o status de seu apoio."
+      end
+    else
+      errors << "Não é permitido alterar o status deste apoio."
+    end
+    render(json: {success: (errors.size == 0), errors: errors}, status: ((errors.size == 0) ? 200 : 422))
+  end
   
   def contribution_params
     params.require(:contribution).permit(*policy(@contribution || Contribution.new).permitted_attributes)

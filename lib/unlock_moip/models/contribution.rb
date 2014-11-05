@@ -25,10 +25,9 @@ module UnlockMoip
         "#{self.initiative.permalink[0..29]}#{self.id}#{'sandbox' if self.gateway.sandbox?}"
       end
       
-      # TODO these numbers are not used anymore. Use string and/or symbol
-      def moip_state
+      def moip_state_name
         begin
-          response = Moip::Assinaturas::Subscription.details(self.subscription_code, moip_auth: self.moip_auth)
+          response = Moip::Assinaturas::Subscription.details(self.subscription_code, self.moip_auth)
         rescue
           return nil
         end
@@ -36,25 +35,15 @@ module UnlockMoip
           status = (response[:subscription]["status"].upcase rescue nil)
           case status
             when 'ACTIVE', 'OVERDUE'
-              1
+              :active
             when 'SUSPENDED', 'EXPIRED', 'CANCELED'
-              2
+              :suspended
           end
         end
       end
 
-      # TODO these numbers are not used anymore. Use string and/or symbol
-      def moip_state_name
-        case self.moip_state
-          when 1
-            :active
-          when 2
-            :suspended
-        end
-      end
-
       def update_state_from_moip!
-        if self.state != self.moip_state
+        if self.state_name != self.moip_state_name
           case self.moip_state_name
             when :active
               self.activate! if self.can_activate?
