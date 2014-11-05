@@ -29,6 +29,12 @@ class UnlockMoip::ContributionsController < ::ApplicationController
 
     if @contribution.save
 
+      @contribution.reload
+      @contribution.gateway_data = {}
+      @contribution.gateway_data["customer_code"] = @contribution.customer_code
+      @contribution.gateway_data["subscription_code"] = @contribution.subscription_code
+      @contribution.save!
+
       # Creating the plan, if needed
       begin
         response = Moip::Assinaturas::Plan.details(@contribution.plan_code, @contribution.moip_auth)

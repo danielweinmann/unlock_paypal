@@ -10,9 +10,8 @@ $(document).ready ->
       event.stopPropagation()
       billing_info_ok = false
       form = $('#pay_form')
-      options = form.parent().find('.options')
       submit = form.find('[type=submit]')
-      status = form.find('.status')
+      status = form.find('.gateway_data')
       terms = form.find('#terms')
       status.removeClass 'success'
       status.removeClass 'failure'
@@ -46,13 +45,7 @@ $(document).ready ->
                   type: 'PUT',
                   dataType: 'json',
                   success: (response) ->
-                    status.addClass 'success'
-                    status.find('ul').append("<li>Seu código de assinatura é <strong>#{form.data('subscription')}</strong></li>")
-                    status.find('ul').append("<li>Seu pagamento ainda será processado pelo <a href='https://www.moip.com.br/' target='_blank'>Moip</a></li>")
-                    status.find('ul').append("<li>Se você quiser suspender seu apoio, basta acessar o menu <a href='/my_contributions'>Unlocks apoiados</a> a qualquer momento.</li>")
-                    status.find('ul').append("<li>Sua próxima cobrança será realizada em #{next_invoice}.</li>")
-                    form.find('input, label, .value').hide()
-                    options.show()
+                    window.location.href = form.data('show')
                   error: (response) ->
                     status.find('h4').html("Não foi possível ativar sua assinatura")
                     status.addClass 'failure'

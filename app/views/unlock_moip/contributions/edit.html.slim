@@ -2,7 +2,7 @@
   = "Dados de pagamento"
 - content_for :external_js do
   script type="text/javascript" src="https://#{( @contribution.gateway.sandbox? ? 'sandbox' : 'api' )}.moip.com.br/moip-assinaturas.min.js"
-form#pay_form autocomplete="off" data-token=@contribution.gateway.settings["token"] data-plan=@contribution.plan_code data-customer=@contribution.customer_code data-subscription=@contribution.subscription_code data-activate=activate_moip_contribution_path
+form#pay_form autocomplete="off" data-token=@contribution.gateway.settings["token"] data-plan=@contribution.plan_code data-customer=@contribution.customer_code data-subscription=@contribution.subscription_code data-activate=activate_moip_contribution_path data-show=initiative_contribution_path(@contribution.initiative.id, @contribution)
   - if @contribution.gateway.sandbox?
     .warning
       h3 Atenção! Este unlock encontra-se em modo de testes (Sandbox) no Moip.
@@ -28,13 +28,5 @@ form#pay_form autocomplete="off" data-token=@contribution.gateway.settings["toke
     = "Apoio de "
     span= "R$ #{@contribution.display_value},00"
     = "/mês"
-  .status
+  .gateway_data
   .submit= submit_tag "Confirmar pagamento"
-/ TODO move this to Initatives::ContributionsController#show and make UnlockMoip redirect to it after completing transaction
-.options id=dom_id(@contribution) data-url=initiative_contribution_path(@contribution.initiative.id, @contribution.id)
-  .field
-    = check_box_tag :"hide_name_#{@contribution.id}", "1", @contribution.hide_name, :class => "editable", :"data-attribute" => "hide_name", :"data-formtype" => "checkbox"
-    = label_tag :"hide_name_#{@contribution.id}", Contribution.human_attribute_name(:hide_name)
-  .field
-    = check_box_tag :"hide_value_#{@contribution.id}", "1", @contribution.hide_value, :class => "editable", :"data-attribute" => "hide_value", :"data-formtype" => "checkbox"
-    = label_tag :"hide_value_#{@contribution.id}", Contribution.human_attribute_name(:hide_value)
