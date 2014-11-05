@@ -1,1 +1,4 @@
-Gateway.register 'UnlockMoip'
+begin
+  Gateway.register 'UnlockMoip'
+rescue
+end
