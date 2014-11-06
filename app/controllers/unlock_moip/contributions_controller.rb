@@ -29,11 +29,26 @@ class UnlockMoip::ContributionsController < ::ApplicationController
 
     if @contribution.save
 
-      @contribution.reload
-      @contribution.gateway_data = {}
-      @contribution.gateway_data["customer_code"] = @contribution.customer_code
-      @contribution.gateway_data["subscription_code"] = @contribution.subscription_code
-      @contribution.save!
+      data = {}
+      # Storing the customer_code and subscription_code
+      data["customer_code"] = @contribution.customer_code
+      data["subscription_code"] = @contribution.subscription_code
+      # Storing user information
+      data["email"] = @contribution.user.email,
+      data["full_name"] = @contribution.user.full_name
+      data["document"] = @contribution.user.document
+      data["phone_area_code"] = @contribution.user.phone_area_code
+      data["phone_number"] = @contribution.user.phone_number
+      data["birthdate"] = @contribution.user.birthdate
+      data["address_street"] = @contribution.user.address_street
+      data["address_number"] = @contribution.user.address_number
+      data["address_complement"] = @contribution.user.address_complement
+      data["address_district"] = @contribution.user.address_district
+      data["address_city"] = @contribution.user.address_city
+      data["address_state"] = @contribution.user.address_state
+      data["address_zipcode"] = @contribution.user.address_zipcode
+      # Saving gateway_data
+      @contribution.update gateway_data: data
 
       # Creating the plan, if needed
       begin
