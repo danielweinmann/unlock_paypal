@@ -22,9 +22,6 @@ class UnlockMoip::ContributionsController < ::ApplicationController
     @gateways = @initiative.gateways.without_state(:draft).order(:ordering)
     @contribution = @initiative.contributions.new(contribution_params)
     @contribution.gateway_state = @contribution.gateway.state
-    @contribution.gateway_data = {}
-    @contribution.gateway_data["customer_code"] = @contribution.customer_code
-    @contribution.gateway_data["subscription_code"] = @contribution.subscription_code
     authorize @contribution
 
     if @contribution.save
@@ -34,7 +31,7 @@ class UnlockMoip::ContributionsController < ::ApplicationController
       data["customer_code"] = @contribution.customer_code
       data["subscription_code"] = @contribution.subscription_code
       # Storing user information
-      data["email"] = @contribution.user.email,
+      data["email"] = @contribution.user.email
       data["full_name"] = @contribution.user.full_name
       data["document"] = @contribution.user.document
       data["phone_area_code"] = @contribution.user.phone_area_code
