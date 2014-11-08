@@ -14,7 +14,7 @@ And then execute:
 
 ## Usage
 
-Add the following line to your application.js, after _require_tree ._:
+Add the following line to your application.js, after _require_tree ._
 
     //= require unlock_moip
 
