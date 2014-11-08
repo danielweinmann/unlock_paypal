@@ -7,7 +7,7 @@ Moip Assinaturas integration with [Unlock](http://github.com/danielweinmann/unlo
 Add this line to your Unlock application's Gemfile:
 
 ``` ruby
-gem 'unlock_moip', github: 'danielweinmann/unlock_moip', branch: 'master'
+gem 'unlock_moip'
 ```
 
 And then execute:
