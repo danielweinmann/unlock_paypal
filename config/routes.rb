@@ -4,6 +4,10 @@ Rails.application.routes.draw do
     member do
       put :activate
       put :suspend
+      get :error
+    end
+    collection do
+      post :ipn
     end
   end
 
