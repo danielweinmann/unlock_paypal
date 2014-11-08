@@ -13,7 +13,7 @@ gem 'unlock_moip', github: 'danielweinmann/unlock_moip', branch: 'master'
 And then execute:
 
 ``` terminal
-$ bundle
+bundle
 ```
 
 ## Usage
