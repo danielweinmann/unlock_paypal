@@ -1,7 +1,7 @@
-= form_for @contribution, url: moip_contributions_path, method: :post do |form|
+= form_for @contribution, url: paypal_contributions_path, method: :post do |form|
   - if gateway.sandbox?
     .warning
-      h3 Atenção! Este unlock encontra-se em modo de testes (Sandbox) no Moip.
+      h3 Atenção! Este unlock encontra-se em modo de testes (Sandbox) no Paypal.
       ul
         li Nenhum apoio realizado neste modo será concretizado.
         li Você pode testar livremente, sem medo de ser debitado.
@@ -17,7 +17,7 @@
   h3 Com quanto você quer apoiar por mês?
   = form.label :value
   = form.text_field :value, class: "has_em"
-  em Assinatura mensal cobrada via cartão de crédito pelo meio de pagamentos #{link_to 'Moip', 'https://moip.com.br/', target: :_blank }. Você pode suspender #{ link_to 'a qualquer momento', my_contributions_path, target: :_blank }.
+  em Assinatura mensal cobrada via cartão de crédito pelo meio de pagamentos #{link_to 'Paypal', 'https://paypal.com.br/', target: :_blank }. Você pode suspender #{ link_to 'a qualquer momento', my_contributions_path, target: :_blank }.
   h3 Preencha e revise os dados para pagamento
   = form.fields_for :user do |user_fields|
     = user_fields.hidden_field :id

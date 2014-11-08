@@ -1,4 +1,4 @@
 begin
-  Gateway.register 'UnlockMoip'
+  Gateway.register 'UnlockPaypal'
 rescue
 end

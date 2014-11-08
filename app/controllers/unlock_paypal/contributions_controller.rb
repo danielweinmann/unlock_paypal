@@ -1,4 +1,4 @@
-class UnlockMoip::ContributionsController < ::ApplicationController
+class UnlockPayPal::ContributionsController < ::ApplicationController
 
   inherit_resources
   actions :create, :edit
@@ -49,16 +49,16 @@ class UnlockMoip::ContributionsController < ::ApplicationController
 
       # Creating the plan, if needed
       begin
-        response = Moip::Assinaturas::Plan.details(@contribution.plan_code, @contribution.moip_auth)
-      rescue Moip::Assinaturas::WebServerResponseError => e
+        response = Paypal::Assinaturas::Plan.details(@contribution.plan_code, @contribution.paypal_auth)
+      rescue Paypal::Assinaturas::WebServerResponseError => e
         if @contribution.gateway.sandbox?
-          @contribution.errors.add(:base, "Parece que este Unlock não está autorizado a utilizar o ambiente de Sandbox do Moip Assinaturas.#{ ' Você já solicitou acesso ao Moip Assinaturas? Verifique também se configurou o Token e a Chave de API.' if @initiative.user == current_user }")
+          @contribution.errors.add(:base, "Parece que este Unlock não está autorizado a utilizar o ambiente de Sandbox do Paypal Assinaturas.#{ ' Você já solicitou acesso ao Paypal Assinaturas? Verifique também se configurou o Token e a Chave de API.' if @initiative.user == current_user }")
         else
-          @contribution.errors.add(:base, "Parece que este Unlock não está autorizado a utilizar o ambiente de produção do Moip Assinaturas.#{ ' Você já homologou sua conta para produção no Moip Assinaturas? Verifique também se configurou o Token e a Chave de API.' if @initiative.user == current_user }")
+          @contribution.errors.add(:base, "Parece que este Unlock não está autorizado a utilizar o ambiente de produção do Paypal Assinaturas.#{ ' Você já homologou sua conta para produção no Paypal Assinaturas? Verifique também se configurou o Token e a Chave de API.' if @initiative.user == current_user }")
         end
         return render '/initiatives/contributions/new'
       rescue => e
-        @contribution.errors.add(:base, "Ocorreu um erro de conexão ao verificar o plano de assinaturas no Moip. Por favor, tente novamente.")
+        @contribution.errors.add(:base, "Ocorreu um erro de conexão ao verificar o plano de assinaturas no Paypal. Por favor, tente novamente.")
         return render '/initiatives/contributions/new'
       end
       unless response[:success]
@@ -68,18 +68,18 @@ class UnlockMoip::ContributionsController < ::ApplicationController
           amount: (@contribution.value * 100).to_i
         }
         begin
-          response = Moip::Assinaturas::Plan.create(plan, @contribution.moip_auth)
+          response = Paypal::Assinaturas::Plan.create(plan, @contribution.paypal_auth)
         rescue
-          @contribution.errors.add(:base, "Ocorreu um erro de conexão ao criar o plano de assinaturas no Moip. Por favor, tente novamente.")
+          @contribution.errors.add(:base, "Ocorreu um erro de conexão ao criar o plano de assinaturas no Paypal. Por favor, tente novamente.")
           return render '/initiatives/contributions/new'
         end
         unless response[:success]
           if response[:errors] && response[:errors].kind_of?(Array)
             response[:errors].each do |error|
-              @contribution.errors.add(:base, "#{response[:message]} (Moip). #{error[:description]}")
+              @contribution.errors.add(:base, "#{response[:message]} (Paypal). #{error[:description]}")
             end
           else
-            @contribution.errors.add(:base, "Ocorreu um erro ao criar o plano de assinaturas no Moip. Por favor, tente novamente.")
+            @contribution.errors.add(:base, "Ocorreu um erro ao criar o plano de assinaturas no Paypal. Por favor, tente novamente.")
           end
           return render '/initiatives/contributions/new'
         end
@@ -108,49 +108,49 @@ class UnlockMoip::ContributionsController < ::ApplicationController
         }
       }
       begin
-        response = Moip::Assinaturas::Customer.details(@contribution.customer_code, @contribution.moip_auth)
+        response = Paypal::Assinaturas::Customer.details(@contribution.customer_code, @contribution.paypal_auth)
       rescue
-        @contribution.errors.add(:base, "Ocorreu um erro de conexão ao verificar o cadastro de cliente no Moip. Por favor, tente novamente.")
+        @contribution.errors.add(:base, "Ocorreu um erro de conexão ao verificar o cadastro de cliente no Paypal. Por favor, tente novamente.")
         return render '/initiatives/contributions/new'
       end
       if response[:success]
         begin
-          response = Moip::Assinaturas::Customer.update(@contribution.customer_code, customer, @contribution.moip_auth)
+          response = Paypal::Assinaturas::Customer.update(@contribution.customer_code, customer, @contribution.paypal_auth)
           unless response[:success]
             if response[:errors] && response[:errors].kind_of?(Array)
               response[:errors].each do |error|
-                @contribution.errors.add(:base, "#{response[:message]} (Moip). #{error[:description]}")
+                @contribution.errors.add(:base, "#{response[:message]} (Paypal). #{error[:description]}")
               end
             else
-              @contribution.errors.add(:base, "Ocorreu um erro ao atualizar o cadastro de cliente no Moip. Por favor, tente novamente.")
+              @contribution.errors.add(:base, "Ocorreu um erro ao atualizar o cadastro de cliente no Paypal. Por favor, tente novamente.")
             end
             return render '/initiatives/contributions/new'
           end
         rescue
-          @contribution.errors.add(:base, "Ocorreu um erro de conexão ao atualizar o cadastro de cliente no Moip. Por favor, tente novamente.")
+          @contribution.errors.add(:base, "Ocorreu um erro de conexão ao atualizar o cadastro de cliente no Paypal. Por favor, tente novamente.")
           return render '/initiatives/contributions/new'
         end
       else
         begin
-          response = Moip::Assinaturas::Customer.create(customer, new_vault = false, @contribution.moip_auth)
+          response = Paypal::Assinaturas::Customer.create(customer, new_vault = false, @contribution.paypal_auth)
         rescue
-          @contribution.errors.add(:base, "Ocorreu um erro de conexão ao realizar o cadastro de cliente no Moip. Por favor, tente novamente.")
+          @contribution.errors.add(:base, "Ocorreu um erro de conexão ao realizar o cadastro de cliente no Paypal. Por favor, tente novamente.")
           return render '/initiatives/contributions/new'
         end
         unless response[:success]
           if response[:errors] && response[:errors].kind_of?(Array)
             response[:errors].each do |error|
-              @contribution.errors.add(:base, "#{response[:message]} (Moip). #{error[:description]}")
+              @contribution.errors.add(:base, "#{response[:message]} (Paypal). #{error[:description]}")
             end
           else
-            @contribution.errors.add(:base, "Ocorreu um erro ao realizar o cadastro de cliente no Moip. Por favor, tente novamente.")
+            @contribution.errors.add(:base, "Ocorreu um erro ao realizar o cadastro de cliente no Paypal. Por favor, tente novamente.")
           end
           return render '/initiatives/contributions/new'
         end
       end
 
       flash[:success] = "Apoio iniciado com sucesso! Agora é só realizar o pagamento :D"
-      return redirect_to edit_moip_contribution_path(@contribution)
+      return redirect_to edit_paypal_contribution_path(@contribution)
 
     else
       return render '/initiatives/contributions/new'
@@ -177,8 +177,8 @@ class UnlockMoip::ContributionsController < ::ApplicationController
     errors = []
     if resource.send("can_#{transition}?")
       begin
-        if resource.moip_state_name != state
-          response = Moip::Assinaturas::Subscription.send(transition.to_sym, resource.subscription_code, resource.moip_auth)
+        if resource.paypal_state_name != state
+          response = Paypal::Assinaturas::Subscription.send(transition.to_sym, resource.subscription_code, resource.paypal_auth)
           resource.send("#{transition}!") if response[:success]
         else
           resource.send("#{transition}!")

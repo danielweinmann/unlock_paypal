@@ -1,12 +1,12 @@
-module UnlockMoip
+module UnlockPaypal
   module Models
     module Contribution
 
       include UnlockGateway::Models::Contribution
 
-      def moip_auth
+      def paypal_auth
         return {} unless self.gateway && self.gateway.settings
-        { moip_auth: { token: self.gateway.settings["token"], key: self.gateway.settings["key"], sandbox: self.gateway.sandbox? }}
+        { paypal_auth: { token: self.gateway.settings["token"], key: self.gateway.settings["key"], sandbox: self.gateway.sandbox? }}
       end
 
       def plan_code
@@ -33,9 +33,9 @@ module UnlockMoip
         end
       end
 
-      def moip_state_name
+      def paypal_state_name
         begin
-          response = Moip::Assinaturas::Subscription.details(self.subscription_code, self.moip_auth)
+          response = Paypal::Assinaturas::Subscription.details(self.subscription_code, self.paypal_auth)
         rescue
           return nil
         end
@@ -51,8 +51,8 @@ module UnlockMoip
       end
 
       def update_state_from_gateway!
-        if self.state_name != self.moip_state_name
-          case self.moip_state_name
+        if self.state_name != self.paypal_state_name
+          case self.paypal_state_name
             when :active
               self.activate! if self.can_activate?
             when :suspended

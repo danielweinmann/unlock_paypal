@@ -4,7 +4,7 @@ $(document).ready ->
       thousands: ''
       decimal: ''
       precision: 0
-  if action() == "edit" and controller() == "contributions" and namespace() == "unlockmoip"
+  if action() == "edit" and controller() == "contributions" and namespace() == "unlockpaypal"
     $('#pay_form [type=submit]').on "click", (event) ->
       event.preventDefault()
       event.stopPropagation()
@@ -21,15 +21,15 @@ $(document).ready ->
         status.html("<h4>Você precisa aceitar os termos de uso para continuar.</h4>")
         status.show()
       else
-        status.html("<h4>Enviando dados de pagamento para o Moip...</h4><ul></ul>")
+        status.html("<h4>Enviando dados de pagamento para o paypal...</h4><ul></ul>")
         token = form.data('token')
         plan_code = form.data('plan')
         submit.hide()
         status.show()
-        if MoipAssinaturas?
-          moip = new MoipAssinaturas(token)
-          moip.callback (response) ->
-            status.find('h4').html("#{response.message} (Moip)")
+        if paypalAssinaturas?
+          paypal = new paypalAssinaturas(token)
+          paypal.callback (response) ->
+            status.find('h4').html("#{response.message} (paypal)")
             unless response.has_errors()
               unless billing_info_ok
                 billing_info_ok = true
@@ -37,7 +37,7 @@ $(document).ready ->
                 subscription.with_code(form.data('subscription'))
                 subscription.with_customer(customer)
                 subscription.with_plan_code(plan_code)
-                moip.subscribe(subscription)
+                paypal.subscribe(subscription)
               else
                 next_invoice = "#{response.next_invoice_date.day}/#{response.next_invoice_date.month}/#{response.next_invoice_date.year}"
                 $.ajax
@@ -65,8 +65,8 @@ $(document).ready ->
           customer = new Customer()
           customer.code = form.data('customer')
           customer.billing_info = new BillingInfo(billing_info)
-          moip.update_credit_card(customer)
+          paypal.update_credit_card(customer)
         else
           status.addClass 'failure'
-          status.find('h4').html("Erro ao carregar o Moip Assinaturas. Por favor, recarregue a página e tente novamente.")
+          status.find('h4').html("Erro ao carregar o paypal Assinaturas. Por favor, recarregue a página e tente novamente.")
           submit.show()
