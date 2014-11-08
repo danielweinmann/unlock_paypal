@@ -6,21 +6,29 @@ Moip Assinaturas integration with [Unlock](http://github.com/danielweinmann/unlo
 
 Add this line to your Unlock application's Gemfile:
 
-    gem 'unlock_moip', github: 'danielweinmann/unlock_moip', branch: 'master'
+``` ruby
+gem 'unlock_moip', github: 'danielweinmann/unlock_moip', branch: 'master'
+```
 
 And then execute:
 
-    $ bundle
+``` terminal
+bundle
+```
 
 ## Usage
 
 Add the following line to your application.js, after _require_tree ._
 
-    //= require unlock_moip
+``` ruby
+//= require unlock_moip
+```
 
 Add the following line to your application.css.sass, after all other non-gateway-specific imports
 
-    @import unlock_moip
+``` ruby
+@import unlock_moip
+```
 
 ## Contributing
 
