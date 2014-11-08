@@ -2,6 +2,8 @@ module UnlockMoip
   module Models
     module Contribution
 
+      include UnlockGateway::Models::Contribution
+
       def moip_auth
         return {} unless self.gateway && self.gateway.settings
         { moip_auth: { token: self.gateway.settings["token"], key: self.gateway.settings["key"], sandbox: self.gateway.sandbox? }}
