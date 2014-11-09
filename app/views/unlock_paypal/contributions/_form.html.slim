@@ -1,5 +1,4 @@
 = form_for @contribution, url: paypal_contributions_path, method: :post do |form|
   = render partial: 'sandbox_warning', locals: { gateway: gateway }
-  = render partial: 'error_explanation', locals: { resource: @contribution }
   = render partial: 'initiatives/contributions/base_form', locals: { form: form, gateway: gateway }
   .submit= form.submit "Realizar pagamento pelo Paypal"
