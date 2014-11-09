@@ -1,3 +1,4 @@
+require "paypal/recurring"
 require "unlock_gateway"
 require "unlock_paypal/engine"
 require "unlock_paypal/models/gateway"
