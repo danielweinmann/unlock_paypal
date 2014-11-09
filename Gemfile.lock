@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    unlock_paypal (0.0.5)
+    unlock_paypal (0.1.0)
       paypal-recurring
       rails (~> 4.1.6)
-      unlock_gateway (= 0.0.5)
+      unlock_gateway (= 0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -81,7 +81,7 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    unlock_gateway (0.0.5)
+    unlock_gateway (0.1.0)
       rails (~> 4.1.6)
 
 PLATFORMS
