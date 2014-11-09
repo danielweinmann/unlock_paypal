@@ -1,13 +1,11 @@
 class UnlockPaypal::ContributionsController < ::ApplicationController
 
   is_unlock_gateway
+  after_action :verify_authorized, except: %i[ipn]
 
   def create
 
     if create_contribution
-
-      # TODO don't use configure_paypal
-      @contribution.configure_paypal
 
       paypal = PayPal::Recurring.new({
         return_url: edit_paypal_contribution_url(@contribution),
@@ -16,7 +14,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
         description: @initiative.name,
         amount:  ('%.2f' % @contribution.value),
         currency: "BRL"
-      })
+      }.merge(@contribution.paypal_auth))
 
       checkout = paypal.checkout
 
@@ -40,9 +38,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
       authorize resource
       @initiative = @contribution.initiative
       @gateways = @initiative.gateways.without_state(:draft).order(:ordering)
-      # TODO don't use configure_paypal
-      @contribution.configure_paypal
-      paypal = PayPal::Recurring.new(token: params[:token])
+      paypal = PayPal::Recurring.new({token: params[:token]}.merge(@contribution.paypal_auth))
       details = paypal.checkout_details
       @contribution.gateway_data = {} unless @contribution.gateway_data
       @contribution.gateway_data["token"] = params[:token]
@@ -66,7 +62,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
         description: details.description,
         amount:  details.amount,
         currency: details.currency
-      })
+      }.merge(@contribution.paypal_auth))
       payment = paypal.request_payment
       if payment.approved? && payment.completed?
         recurring = PayPal::Recurring.new({
@@ -81,7 +77,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
           start_at: Time.now,
           failed: 3,
           outstanding: :next_billing
-        })
+        }.merge(@contribution.paypal_auth))
         profile = recurring.create_recurring_profile
         if profile.valid? && profile.profile_id.present? && profile.status == "ActiveProfile"
           profile_data = {}
@@ -115,6 +111,11 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
         return render '/initiatives/contributions/new'
       end
     end
+  end
+
+  def ipn
+    # TODO implement ipn in the future
+    head :ok
   end
 
 end

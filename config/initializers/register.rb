@@ -1,4 +1,1 @@
-begin
-  Gateway.register 'UnlockPaypal'
-rescue
-end
+UnlockGateway.register 'UnlockPaypal'
