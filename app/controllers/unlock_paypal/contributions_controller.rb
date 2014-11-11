@@ -13,7 +13,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
         ipn_url: ipn_paypal_contributions_url,
         description: @initiative.name,
         amount:  ('%.2f' % @contribution.value),
-        currency: "BRL"
+        currency: @initiative.currency
       }.merge(@contribution.paypal_auth))
 
       checkout = paypal.checkout
