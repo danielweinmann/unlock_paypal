@@ -21,11 +21,8 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
       if checkout.valid?
         redirect_to checkout.checkout_url
       else
-        if @contribution.gateway.sandbox?
-          @contribution.errors.add(:base, "Parece que este Unlock não está autorizado a utilizar o ambiente de Sandbox do PayPal.#{ ' Você já solicitou acesso à API? Verifique também se configurou o nome de usuário, a senha e a assinatura de API no PayPal.' if @initiative.user == current_user }")
-        else
-          @contribution.errors.add(:base, "Parece que este Unlock não está autorizado a utilizar o ambiente de produção do PayPal.#{ ' Você já solicitou acesso à API? Verifique também se configurou o nome de usuário, a senha e a assinatura de API no PayPal.' if @initiative.user == current_user }")
-        end
+        error = t('flash.actions.create.alert', resource_name: @contribution.class.model_name.human)
+        @contribution.errors.add(:base, "#{error} (PayPal - checkout_url)")
         return render '/initiatives/contributions/new'
       end
 
@@ -93,7 +90,8 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
             end
           end
         else
-          @contribution.errors.add(:base, "Ooops. Ocorreu um erro ao ativar seu perfil recorrente no PayPal.")
+          error = t('flash.actions.create.alert', resource_name: @contribution.class.model_name.human)
+          @contribution.errors.add(:base, "#{error} (PayPal - create_recurring_profile)")
         end
         return render '/initiatives/contributions/new'
       end
@@ -105,7 +103,8 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
           end
         end
       else
-        @contribution.errors.add(:base, "Ooops. Ocorreu um erro ao processar seu pagamento no PayPal.")
+        error = t('flash.actions.create.alert', resource_name: @contribution.class.model_name.human)
+        @contribution.errors.add(:base, "#{error} (PayPal - request_payment)")
       end
       return render '/initiatives/contributions/new'
     end
