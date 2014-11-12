@@ -1,0 +1,10 @@
+es:
+  unlock_paypal:
+    models:
+      gateway:
+        description: "Ahorra tiempo y dinero con el servicio de Suscripciones y pagos recurrentes de PayPal"
+        available_settings:
+          instructions: "Con tu cuenta Premier ou Business habilitada en Paypal, <a href='https://www.paypal.com/cgi-bin/customerprofileweb?cmd=_profile-api-access&upgrade.x=1' target='_blank'>haz clic aquí</a> y elige la <strong>Opción 2</strong>. Después, informa que quieres una firma de API (y no un certificado). Finalmente, <a href='https://www.paypal.com/br/cgi-bin/webscr?cmd=_profile-api-signature' target='_blank'>haz clic aquí</a>."
+          username: "Nombre de usuario de API"
+          password: "Contraseña de API"
+          signature: "Firma de API"

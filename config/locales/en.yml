@@ -1,0 +1,10 @@
+en:
+  unlock_paypal:
+    models:
+      gateway:
+        description: "Save time and money with PayPal's hassle-free Subscriptions and Recurring Payments"
+        available_settings:
+          instructions: "With your Premier or Business account enabled on PayPal, <a href='https://www.paypal.com/cgi-bin/customerprofileweb?cmd=_profile-api-access&upgrade.x=1' target='_blank'>click here</a> and choose <strong>Option 2</strong>. Then inform that you want an API signature (and not a certificate). Finally, <a href='https://www.paypal.com/br/cgi-bin/webscr?cmd=_profile-api-signature' target='_blank'>click here</a>."
+          username: "API username"
+          password: "API password"
+          signature: "API signature"
