@@ -33,7 +33,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
   def edit
     authorize @contribution
     @initiative = @contribution.initiative
-    @gateways = @initiative.gateways.without_state(:draft).order(:ordering)
+    @gateways = @initiative.gateways.without_state(:draft).ordered
     paypal = PayPal::Recurring.new({token: params[:token]}.merge(@contribution.paypal_auth))
     details = paypal.checkout_details
     @contribution.gateway_data = {} unless @contribution.gateway_data
