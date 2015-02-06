@@ -52,49 +52,27 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
     @contribution.gateway_data["ipn_url"] = details.ipn_url
     @contribution.gateway_data["agreed"] = details.agreed?
     @contribution.save!
-    paypal = PayPal::Recurring.new({
-      token: params[:token],
-      payer_id: params[:PayerID],
+    recurring = PayPal::Recurring.new({
+      ipn_url: details.ipn_url,
       description: details.description,
-      amount:  details.amount,
-      currency: details.currency
+      amount: details.amount,
+      currency: details.currency,
+      frequency: 1,
+      token: params[:token],
+      period: :monthly,
+      payer_id: params[:PayerID],
+      start_at: Time.now,
+      failed: 3,
+      outstanding: :next_billing
     }.merge(@contribution.paypal_auth))
-    payment = paypal.request_payment
-    if payment.approved? && payment.completed?
-      recurring = PayPal::Recurring.new({
-        ipn_url: details.ipn_url,
-        description: details.description,
-        amount: details.amount,
-        currency: details.currency,
-        frequency: 1,
-        token: params[:token],
-        period: :monthly,
-        payer_id: params[:PayerID],
-        start_at: Time.now,
-        failed: 3,
-        outstanding: :next_billing
-      }.merge(@contribution.paypal_auth))
-      profile = recurring.create_recurring_profile
-      if profile.valid? && profile.profile_id.present? && profile.status == "ActiveProfile"
-        profile_data = {}
-        profile_data["profile_id"] = profile.profile_id
-        profile_data["profile_status"] = profile.status
-        @contribution.update gateway_data: @contribution.gateway_data.merge(profile_data)
-        @contribution.activate!
-        return redirect_to initiative_contribution_path(@initiative.id, @contribution)
-      else
-        if payment.errors.size > 0
-          payment.errors.each do |error|
-            error[:messages].each do |message|
-              @contribution.errors.add(:base, "#{error[:code]} #{message} (PayPal)")
-            end
-          end
-        else
-          error = t('flash.actions.create.alert', resource_name: @contribution.class.model_name.human)
-          @contribution.errors.add(:base, "#{error} (PayPal - create_recurring_profile)")
-        end
-        return render '/initiatives/contributions/new'
-      end
+    profile = recurring.create_recurring_profile
+    if profile.valid? && profile.profile_id.present? && profile.status == "ActiveProfile"
+      profile_data = {}
+      profile_data["profile_id"] = profile.profile_id
+      profile_data["profile_status"] = profile.status
+      @contribution.update gateway_data: @contribution.gateway_data.merge(profile_data)
+      @contribution.activate!
+      return redirect_to initiative_contribution_path(@initiative.id, @contribution)
     else
       if payment.errors.size > 0
         payment.errors.each do |error|
@@ -104,7 +82,7 @@ class UnlockPaypal::ContributionsController < ::ApplicationController
         end
       else
         error = t('flash.actions.create.alert', resource_name: @contribution.class.model_name.human)
-        @contribution.errors.add(:base, "#{error} (PayPal - request_payment)")
+        @contribution.errors.add(:base, "#{error} (PayPal - create_recurring_profile)")
       end
       return render '/initiatives/contributions/new'
     end
